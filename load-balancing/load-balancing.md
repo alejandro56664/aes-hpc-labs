@@ -2,9 +2,9 @@
 
 ## Contenido
 
-- [Introducción](#Introducción)
-- [Funcionamiento](#Funcionamiento)
-- [Preparación ambiente pruebas](#preparación ambiente pruebas)
+- [Introducción](#introducción)
+- [Funcionamiento](#funcionamiento)
+- [Preparación ambiente pruebas](#preparación-ambiente-pruebas)
 - [Experimentos](#experimentos)
 - [Conclusiones](#conclusiones)
 - [Referencias](#referencias)
@@ -28,16 +28,43 @@ El sistema operativo de las maquinas virtuales se va a utilizar Alpine Linux por
 En este punto se va a explicar como crear y configurar las maquinas virtuales.
 Ingrese al _Administrador de Hyper-V_
 
-pasos de las imagenes
+Pasos para crear una maquina virtual
 
-Configuración Alpine
+![crea vm step1](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/crear%20vm%20step1.PNG?raw=true)
 
+![crea vm step2](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/crear%20vm%20step2.PNG?raw=true)
+
+![crea vm step3](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/crear%20vm%20step3.PNG?raw=true)
+
+![crea vm step4](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/crear%20vm%20step4.PNG?raw=true)
+
+![crea vm step5](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/crear%20vm%20step5.PNG?raw=true)
+
+![crea vm step6](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/crear%20vm%20step6.PNG?raw=true)
+
+![crea vm step7](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/crear%20vm%20step7.PNG?raw=true)
+
+![crea vm step8](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/crear%20vm%20step8.PNG?raw=true)
+
+Pasos para configurar la maquina virtual:
+
+![configuar step1](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/configurar%20vm%20step1.PNG?raw=true)
+
+![configuar step2](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/configurar%20vm%20step2.PNG?raw=true)
+
+
+Debe iniciar sesión con el usuario por defecto: _root_ y luego ejecutar el asistente de configuración de Alpine: 
+
+```sh
 setup-alpine
-
-Configuraciones recomendadas:
+```
+Esto iniciara un asistente, se recomiendan las siguientes configuraciones, las demas las puede dejar por defecto:
 - idioma teclado: _es_ luego _es-winkeys_
 - host: vm0x _donde x: 0, 1, n nodo_
 - pass: lab@vm0x _donde x: 0, 1, n nodo_
+
+![configuar step3](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/configurar%20vm%20step3.PNG?raw=true)
+
 
 Instalación nginx
 
@@ -45,6 +72,12 @@ Instalación nginx
 apk update
 
 apk add nginx
+```
+
+![configuar step4](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/configurar%20vm%20step4.PNG?raw=true)
+
+Para configurar la página html que se va a presentar:
+```sh
 
 cd ..
 
@@ -129,6 +162,8 @@ Para ver la ip de la maquina virtual puede usar el siguiente comando:
 ```sh
 ip a
 ```
+![configuar step5](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/configurar%20vm%20step5.PNG?raw=true)
+
 
 *NOTA:*
 Estos pasos se repiten con todas las maquinas nodos que se desean crear para los nodos
