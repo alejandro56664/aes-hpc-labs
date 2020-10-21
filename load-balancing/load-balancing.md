@@ -11,17 +11,47 @@
 
 ## Introducción
 
-TODO: agregar introducción
+En este documento se pretende mostrar el funcionamiento de los balanceadores de carga a través de una aproximación teorico-practica utilizando como principal herramienta el servidor de aplicaciones NGINX.
+En la sección _Funcionamiento_ se describe brevemente como funcionan los balanceadores y que tipo de algoritmos usan. Luego en la sección _Preparación ambiente pruebas_ se describe paso a paso como instalar y configurar un clúster local usando Hyper-V en Windows 10 y Alpine Linux y NGINX para realizar los experimentos. En la sección _Experimentos_ se presenta el procedimiento para realizar las pruebas de balanceo cambiando la configuración del nodo director de forma tal que se pueda probar el comportamiento de los diferentes algoritmos de balanceo y su verificación analizando el trafico generado usando la herramienta Wireshark. Finalmente en la sección _Conclusiones_ se revisa las ventajas y desventajas de cada algoritmo y sus posibles casos de uso en la practica.
 
 ## Funcionamiento
 
-TODO: agregar funcionamiento
+El balanceo de carga consiste en distribuir un conjunto de tareas sobre un conjunto de recursos (unidades informáticas), para hacer más eficiente su procesamiento general. Existen dos enfoques principales:
+
+1. algoritmos estáticos, que no tienen en cuenta el estado de las diferentes máquinas
+2. algoritmos dinámicos, que suelen ser más generales y más eficientes, pero requieren intercambios de información entre las diferentes unidades informáticas, a riesgo de un pérdida de eficiencia.
+
+![esquema básico balanceo de carga](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/esquema%20basico.PNG?raw=true)
+
+### Objetivos
+
+- Distribuir las solicitudes de los clientes o la carga de la red de manera eficiente en varios servidores.
+- Garantizar una alta disponibilidad y confiabilidad al enviar solicitudes solo a los servidores que están en línea.
+- Proporcionar la flexibilidad de agregar o quitar servidores según lo requiera la demanda.
+
+### Aproximaciones
+
+- Round Robin: las solicitudes se distribuyen en el grupo de servidores de forma secuencial.
+
+- Least Connections: se envía una nueva solicitud al servidor con la menor cantidad de conexiones actuales a los clientes. La capacidad informática relativa de cada servidor se tiene en cuenta para determinar cuál tiene menos conexiones.
+
+- Least time: envía solicitudes al servidor seleccionado por una fórmula que combina
+el tiempo de respuesta más rápido y la menor cantidad de conexiones activas.
+
+- Hash: distribuye las solicitudes en función de una clave que defina, como la dirección IP del cliente o
+la URL de la solicitud.
+
+- Hash IP: la dirección IP del cliente se utiliza para determinar qué servidor recibe la solicitud.
+Aleatorio con dos opciones: elige dos servidores al azar y envía la solicitud al
+uno que se selecciona aplicando el algoritmo Least Connections.
+
+TODO: complementar funcionamiento
 
 ## Preparación ambiente pruebas
 
-Para realizar pruebas con el balanceador de carga en un ambiente windows 10 es necesario tener activado el modo Hyper-V. Para habilitar el modo puede consultar: https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v .
+Para realizar pruebas con el balanceador de carga en un ambiente windows 10 es necesario tener activado el modo Hyper-V. Para habilitar el modo puede consultar: <https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v> .
 
-El sistema operativo de las maquinas virtuales se va a utilizar Alpine Linux por ser una distribución liviana. Primero debe descargar el iso en el siguiente enlace: https://www.alpinelinux.org/downloads/, en este laboratorio se uso la versión estandar x86_64.
+El sistema operativo de las maquinas virtuales se va a utilizar Alpine Linux por ser una distribución liviana. Primero debe descargar el iso en el siguiente enlace: <https://www.alpinelinux.org/downloads/>, en este laboratorio se uso la versión estandar x86_64.
 
 ### Creación y configuración maquinas virtuales nodos del clúster
 
@@ -52,19 +82,19 @@ Pasos para configurar la maquina virtual:
 
 ![configuar step2](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/configurar%20vm%20step2.PNG?raw=true)
 
-
-Debe iniciar sesión con el usuario por defecto: _root_ y luego ejecutar el asistente de configuración de Alpine: 
+Debe iniciar sesión con el usuario por defecto: _root_ y luego ejecutar el asistente de configuración de Alpine:
 
 ```sh
 setup-alpine
 ```
+
 Esto iniciara un asistente, se recomiendan las siguientes configuraciones, las demas las puede dejar por defecto:
+
 - idioma teclado: _es_ luego _es-winkeys_
 - host: vm0x _donde x: 0, 1, n nodo_
 - pass: lab@vm0x _donde x: 0, 1, n nodo_
 
 ![configuar step3](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/configurar%20vm%20step3.PNG?raw=true)
-
 
 Instalación nginx
 
@@ -77,6 +107,7 @@ apk add nginx
 ![configuar step4](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/configurar%20vm%20step4.PNG?raw=true)
 
 Para configurar la página html que se va a presentar:
+
 ```sh
 
 cd ..
@@ -89,6 +120,7 @@ vi index.html
 ```
 
 Recuerde:
+
 - Para insertar texto presione la tecla _i_
 - Cuando termine de editar presione _[esc]_ y luego escriba _:wq_
 - Si desea salir sin guargar, presione _[esc]_ y luego escriba _:q!_
@@ -135,7 +167,7 @@ server {
       }
 ```
 
-Fuente: https://docs.nginx.com/nginx/admin-guide/web-server/serving-static-content/
+Fuente: <https://docs.nginx.com/nginx/admin-guide/web-server/serving-static-content/>
 
 Guarde: [esc] :wq
 
@@ -162,8 +194,8 @@ Para ver la ip de la maquina virtual puede usar el siguiente comando:
 ```sh
 ip a
 ```
-![configuar step5](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/configurar%20vm%20step5.PNG?raw=true)
 
+![configuar step5](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/configurar%20vm%20step5.PNG?raw=true)
 
 *NOTA:*
 Estos pasos se repiten con todas las maquinas nodos que se desean crear para los nodos
@@ -209,7 +241,7 @@ http {
 }
 ```
 
-Fuente: https://www.nginx.com/resources/wiki/start/topics/examples/loadbalanceexample/
+Fuente: <https://www.nginx.com/resources/wiki/start/topics/examples/loadbalanceexample/>
 
 Guarde: [esc] :wq
 
@@ -232,10 +264,49 @@ En este punto ya tiene configurado un ambiente básico para realizar pruebas de 
 
 ## Experimentos
 
+Para la ejecución de los experimentos propuestos se requiere tener instalado el software Wireshark, el cuál puede descargar de la siguiente dirección: <https://www.wireshark.org/download.html>.
+
+Una vez instalado y configurado el clúster de manera local, se procede a realizar las siguientes pruebas.
+
+### Balanceo tipo Round-robin con pesos
+
+Procedimiento
+
+TODO agregar procedimiento
+
+Resultados
+
+TODO agregar resultados
+
+### Balanceo tipo Least Connections
+
+Procedimiento
+
+TODO agregar procedimiento
+
+Resultados
+
+TODO agregar resultados
+
+### Balanceo tipo IP Hash
+
+Procedimiento
+
+TODO agregar procedimiento
+
+Resultados
+
+TODO agregar resultados
+
 ## Conclusiones
+
+TODO presentar un resumen de las ventajas y desventajas de cada uno de los algoritmos.
 
 ## Referencias
 
-- https://www.nginx.com/resources/wiki/start/topics/examples/loadbalanceexample/
-- https://wiki.alpinelinux.org/wiki/Alpine_Install:_from_a_iso_to_a_virtualbox_machine_with_external_disc
-- https://www.cyberciti.biz/faq/how-to-install-nginx-web-server-on-alpine-linux/
+- <https://nginx.org/en/docs/http/ngx_http_upstream_module.html>
+- <https://www.nginx.com/resources/glossary/load-balancing/>
+- <https://www.nginx.com/resources/wiki/start/topics/examples/loadbalanceexample/>
+- <https://wiki.alpinelinux.org/wiki/Alpine_Install:_from_a_iso_to_a_virtualbox_machine_with_external_disc>
+- <https://www.cyberciti.biz/faq/how-to-install-nginx-web-server-on-alpine-linux/>
+- <https://nginx.org/en/docs/http/ngx_http_upstream_module.html>
