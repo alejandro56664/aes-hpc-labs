@@ -171,13 +171,13 @@ Fuente: <https://docs.nginx.com/nginx/admin-guide/web-server/serving-static-cont
 
 Guarde: [esc] :wq
 
-Ahora es necesario configurar el servicio de nginx para que inicie cada vez que inicie el sistema operativo
+Ahora es necesario configurar el servicio de nginx para que inicie cada vez que inicie el sistema operativo, puede obtener mayor información sobre el comando (rc-update)[https://manpages.debian.org/testing/openrc/rc-update.8.en.html]
 
 ```sh
 rc-update add nginx default
 ```
 
-Esto permite iniciar, detener y reiniciar el servicio desde la linea de comandos:
+Esto permite iniciar, detener y reiniciar el servicio desde la linea de comandos, se utiliza el comando rc-service, el cuál permite localizar un servicio y enviarle comandos. puede obtener mayor información sobre el comando (rc-update)[https://manpages.debian.org/testing/openrc/rc-update.8.en.html] :
 
 ```sh
 rc-service nginx start
@@ -233,7 +233,7 @@ vi /etc/nginx/nginx.conf
 
 ```js
 http {
-    upstream myproject {
+    upstream cluster {
     server 192.168.x.x:80 weight=2;
     server 192.168.x.x:80;
   }
@@ -260,43 +260,79 @@ ip a
 
 Entre al navegador con la ip indicada y podrá ver el html (recargue varias veces la página y verá que algunas veces atiende la vm01 y otras la vm02)
 
-En este punto ya tiene configurado un ambiente básico para realizar pruebas de balanceo de carga en un maquina local con Windows 10.
+En este punto ya tiene configurado un ambiente básico para realizar pruebas de balanceo de carga en una maquina local con Windows 10.
 
 ## Experimentos
 
-Para la ejecución de los experimentos propuestos se requiere tener instalado el software Wireshark, el cuál puede descargar de la siguiente dirección: <https://www.wireshark.org/download.html>.
+Para la ejecución de los experimentos propuestos se requiere tener instalado el software *tcpdump*, el cuál puede descargar e instalarse en este caso en la maquina director.
+Para mas información visite el sitio oficial: https://www.tcpdump.org/manpages/tcpdump.1.html
+
+```sh
+apk add tcpdump
+```
 
 Una vez instalado y configurado el clúster de manera local, se procede a realizar las siguientes pruebas.
 
+Para verificar el acceso a cada servidor se vigilará los logs de cada servidor, para ello puede utilizar el comando:
+
+```sh
+tail -n 1000 /var/log/nginx/access.log -f
+```
+El cuál permite vigilar el documento a medida que crece (parametro -f) y limita a 1000 el número de lineas mostradas (parametro -n)
+
 ### Balanceo tipo Round-robin con pesos
 
-Procedimiento
+Procedimiento: 
 
-TODO agregar procedimiento
+1. Se configura el ngnix del director de la siguiente manera:
 
-Resultados
+```js
+http {
+    upstream cluster {
+    server 192.168.x.x:80 weight=1;
+    server 192.168.x.x:80 weight=1;
+    server 192.168.x.x:80 weight=1;
+  }
+  # ... demas configuraciones
+}
+```
 
-TODO agregar resultados
+2. Ejecute el siguiente comando:
 
-### Balanceo tipo Least Connections
+En la siguiente imagen obtenida del _tcpdump_ se puede observar las diferentes solicitudes en el tiempo:
 
-Procedimiento
+```sh
+tcpdump 'tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)'
+```
 
-TODO agregar procedimiento
+Este comando permite imprimir todos los paquetes HTTP IPv4 hacia y desde el puerto 80, es decir, imprimir solo paquetes que contienen datos, no, por ejemplo, paquetes SYN y FIN y paquetes solo ACK.
 
-Resultados
+3. Ingrese a la ip de la vm director en un navegador y recargue varias veces la página.
 
-TODO agregar resultados
+Resultados:
 
-### Balanceo tipo IP Hash
+Podrá ver como el _tcpdump_ muestra las peticiones recibidas y las redirecciones a cada uno de los servidores del clúster. En color rojo esta el trafico relacionado con el servidor vm02, en verde el servidor vm03, en azul el servidor vm01:
 
-Procedimiento
+![experimento1 step1](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/experimento1%20tep1.PNG?raw=true)
 
-TODO agregar procedimiento
+En el siguiente video puede observar el comportamiento dinámico del balanceo.
 
-Resultados
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](http://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE "Video Title")
 
-TODO agregar resultados
+2. Se bajan cada uno de los servidores en orden y se verifica el comportamiento del balanceador.
+
+Podrá ver como el _tcpdump_ muestra las peticiones recibidas y las redirecciones a cada uno de los servidores del clúster (menos al servidor apagado, en este caso vm01)
+
+![experimento1 step2](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/experimento1%20tep2.PNG?raw=true)
+
+Ahora se apaga el servidor vm02 y se obtiene el siguiente patrón:
+
+![experimento1 step3](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/experimento1%20tep3.PNG?raw=true)
+
+En el siguiente video puede ver el comportamiento dinamico del balanceador:
+
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](http://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE "Video Title")
+
 
 ## Conclusiones
 
