@@ -1,4 +1,4 @@
-# Balanceadores de carga
+# Tutorial Configuración NGINX como balanceador de carga
 
 ## Contenido
 
@@ -314,10 +314,6 @@ Resultados:
 Podrá ver como el _tcpdump_ muestra las peticiones recibidas y las redirecciones a cada uno de los servidores del clúster. En color rojo esta el trafico relacionado con el servidor vm02, en verde el servidor vm03, en azul el servidor vm01:
 
 ![experimento1 step1](https://github.com/alejandro56664/aes-hpc-labs/blob/main/load-balancing/doc/assets/experimento1%20step1.PNG?raw=true)
-
-En el siguiente video puede observar el comportamiento dinámico del balanceo.
-
-[![IMAGE ALT TEXT](http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](http://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE "Video Title")
 
 2. Se bajan cada uno de los servidores en orden y se verifica el comportamiento del balanceador.
 
