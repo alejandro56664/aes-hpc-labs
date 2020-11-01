@@ -332,7 +332,7 @@ En el siguiente video puede ver el comportamiento dinamico del balanceador:
 
 ## Conclusiones
 
-TODO presentar un resumen de las ventajas y desventajas de cada uno de los algoritmos.
+Como se puede observar a lo largo del documento con herramientas como NGINX, Linux Alpine y Hyper-V es relativamente sencillo construir un ambiente de pruebas de balanceo de clústeres. También el uso de herramientos de monitoreo de red como _tcpdump_ o su equivalente Wireshark son utiles para visualizar el compornamiento de los diferentes nodos de una red. Finalmente, el uso de balanceadores de carga en sistemas distribuidos permiten aumentar la resiliencia global al permitir que las aplicaciones o sitios sigan funcionando aún cuando hay fallas de hardware o software en cada uno de los nodos, también aumenta la escalabilidad al facilitar la adición o supresión de nodos dinamicamente solo a través de archivos de configuración. En este laboratorio quedaron fuera pruebas de opciones mas avanzadas de nginx como balanceo utilizando ip-tables o usando algoritmos como least-conection. También quedó fuera pruebas de replicación del balanceador, lo cuál es importante para sistemas productivos.
 
 ## Referencias
 
